@@ -88,11 +88,9 @@ bool DatabaseManager::open()
 bool DatabaseManager::initializeDatabase()
 {
     if(!open())
-    {
-        _lastError = _database.lastError().text();
         return false;
 
-    }
+
 
     int version = 0;
 
