@@ -6,26 +6,8 @@
 #include <QVariant>
 
 ScanRepository::ScanRepository(const QSqlDatabase &database)
-    : _database(database)
-{
-}
-
-bool ScanRepository::ensureDatabaseReady()
-{
-    if(!_database.isValid())
-    {
-        _lastError = "Подключение к базе данных недействительно.";
-        return false;
-    }
-
-    if(!_database.isOpen())
-    {
-        _lastError = "База данных не открыта.";
-        return false;
-    }
-
-    return true;
-}
+    : RepositoryBase(database)
+{}
 
 QString ScanRepository::statusToString(const ScanStatus &status)
 {
@@ -99,7 +81,7 @@ bool ScanRepository::readScan(const QSqlQuery &query, ScanInfo &outScan)
 
 bool ScanRepository::insertScan(ScanInfo &scan)
 {
-    _lastError.clear();
+    clearError();
     if(!ensureDatabaseReady())
         return false;
 
@@ -158,7 +140,7 @@ bool ScanRepository::insertScan(ScanInfo &scan)
 
 bool ScanRepository::getScanById(const qint64 &scanId, ScanInfo &outScan)
 {
-    _lastError.clear();
+    clearError();
 
     if(!ensureDatabaseReady())
         return false;
@@ -190,7 +172,7 @@ bool ScanRepository::getScanById(const qint64 &scanId, ScanInfo &outScan)
 
 bool ScanRepository::getAllScans(QList<ScanInfo> &outScans)
 {
-    _lastError.clear();
+    clearError();
     outScans.clear();
 
     if(!ensureDatabaseReady())
@@ -224,7 +206,7 @@ bool ScanRepository::getAllScans(QList<ScanInfo> &outScans)
 
 bool ScanRepository::updateScanStatus(const qint64 &scanId, const ScanStatus &status)
 {
-    _lastError.clear();
+    clearError();
     if(!ensureDatabaseReady())
         return false;
 
@@ -264,7 +246,7 @@ bool ScanRepository::updateScanStatus(const qint64 &scanId, const ScanStatus &st
 
 bool ScanRepository::deleteScan(const qint64 scanId)
 {
-    _lastError.clear();
+    clearError();
 
     if(!ensureDatabaseReady())
         return false;
@@ -290,9 +272,4 @@ bool ScanRepository::deleteScan(const qint64 scanId)
     }
 
     return true;
-}
-
-QString ScanRepository::lastError() const
-{
-    return _lastError;
 }

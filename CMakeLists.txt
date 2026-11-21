@@ -23,6 +23,11 @@ qt_add_executable(FolderScanner
     src/database/databaseManager.h src/database/databaseManager.cpp
     src/core/scnaInfo.h
     src/database/scanRepository.h src/database/scanRepository.cpp
+    src/database/repositoryBase.h src/database/repositoryBase.cpp
+    src/core/FileEntry.h
+    src/database/entryRepository.h src/database/entryRepository.cpp
+    src/core/ScanError.h
+    src/database/errorRepository.h src/database/errorRepository.cpp
 
 )
 
