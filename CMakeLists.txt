@@ -30,6 +30,8 @@ qt_add_executable(FolderScanner
     src/database/errorRepository.h src/database/errorRepository.cpp
     src/scanner/fileSystemScanner.h src/scanner/fileSystemScanner.cpp
     src/services/scanService.h src/services/scanService.cpp
+    src/models/fileTreeModel.h src/models/fileTreeModel.cpp
+    src/models/scanHistoryModel.h src/models/scanHistoryModel.cpp
 
 )
 
