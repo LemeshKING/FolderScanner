@@ -4,6 +4,8 @@
 #include <QMainWindow>
 
 class MainToolBar;
+class ScanHistoryPanel;
+class ScanHistoryModel;
 
 class MainWindow : public QMainWindow
 {
@@ -16,5 +18,7 @@ public:
 private:
 
     MainToolBar *_mainToolBar = nullptr;
+    ScanHistoryModel *_scanHistoryModel = nullptr;
+    ScanHistoryPanel *_scanHistoryPanel = nullptr;
 };
 #endif // MAINWINDOW_H

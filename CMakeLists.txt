@@ -35,6 +35,7 @@ qt_add_executable(FolderScanner
     src/models/scanHistoryModel.h src/models/scanHistoryModel.cpp
     src/ui/widgets/mainToolBar.h src/ui/widgets/mainToolBar.cpp
     src/ui/styleManager.h src/ui/styleManager.cpp
+    src/ui/widgets/scanHistoryPanel.h src/ui/widgets/scanHistoryPanel.cpp
 
 )
 
@@ -60,6 +61,7 @@ qt_add_resources(FolderScanner styles
     PREFIX "/styles"
     FILES
         styles/main-toolbar.qss
+        styles/scan-history-panel.qss
 )
 
 target_include_directories(FolderScanner
