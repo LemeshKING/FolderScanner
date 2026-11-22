@@ -1,0 +1,54 @@
+QToolBar#mainToolBar {
+	background-color: #1C222B;
+	border: none;
+	border-bottom: 1px solid #303A47;
+	spacing: 10px;
+	padding: 10px 14px; 
+}
+
+QToolBar#mainToolBar::separate {
+	background-color: #303A47;
+	width: 1px;
+	margin: 5px 6px;
+}
+
+QToolBar#mainToolBar QToolButton {
+	background-color: #252D38;
+	border: 1px solid #3B4655;
+	border-radius: 8px;
+	color: #E1E8F2;
+	padding: 9px 16px;
+	spacing: 9px;
+	font-size: 14px;
+	font-weight: 500;
+	min-height: 24px;
+}
+
+QToolBar#mainToolBar QToolButton:hover {
+	background-color: #303B4A;
+	border-color: #59677B;
+}
+
+QToolBar#mainToolBar QToolButton:pressed {
+	background-color: #202731;
+}
+
+QToolBar#mainToolBar QToolButton:disabled {
+	background-color: #202731;
+	border-color: #303A47;
+	color: #667386;
+}
+
+QToolBar#mainToolBar QToolButton#scanButton {
+	background-color: #777BFF;
+	border-color: #777BFF;
+	color: #FFFFFF;
+}
+
+QToolBar#mainToolBar QToolButton#scanButton:hover {
+	background-color: #898DFF;
+	border-color: #898DFF;
+}
+QToolBar#mainToolBar QToolButton#scanButton:pressed {
+	background-color: #6266DF;
+}

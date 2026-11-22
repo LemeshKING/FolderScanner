@@ -11,6 +11,7 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS
     Core
     Widgets
     Sql
+    Svg
 )
 
 qt_standard_project_setup()
@@ -32,6 +33,8 @@ qt_add_executable(FolderScanner
     src/services/scanService.h src/services/scanService.cpp
     src/models/fileTreeModel.h src/models/fileTreeModel.cpp
     src/models/scanHistoryModel.h src/models/scanHistoryModel.cpp
+    src/ui/widgets/mainToolBar.h src/ui/widgets/mainToolBar.cpp
+    src/ui/styleManager.h src/ui/styleManager.cpp
 
 )
 
@@ -45,6 +48,20 @@ qt_add_resources(FolderScanner sql
 
 )
 
+qt_add_resources(FolderScanner icons
+    PREFIX "/icons"
+    FILES
+        icons/folder-open.svg
+        icons/play.svg
+        icons/refresh-cw.svg
+)
+
+qt_add_resources(FolderScanner styles
+    PREFIX "/styles"
+    FILES
+        styles/main-toolbar.qss
+)
+
 target_include_directories(FolderScanner
     PRIVATE
         src
@@ -55,6 +72,7 @@ target_link_libraries(FolderScanner
         Qt6::Core
         Qt6::Widgets
         Qt6::Sql
+        Qt6::Svg
 )
 
 install(TARGETS FolderScanner

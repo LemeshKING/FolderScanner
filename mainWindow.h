@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+class MainToolBar;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -10,5 +12,9 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
+
+private:
+
+    MainToolBar *_mainToolBar = nullptr;
 };
 #endif // MAINWINDOW_H
