@@ -109,7 +109,7 @@ bool ScanService::getScanHistory(QList<ScanInfo> &scans)
     _lastError.clear();
     scans.clear();
 
-    if(_database.isValid() || !_database.isOpen())
+    if(!_database.isValid() || !_database.isOpen())
     {
         _lastError = "База данных не открыта";
         return false;
@@ -132,7 +132,7 @@ bool ScanService::loadScan(const qint64 &scanId, ScanInfo &scanInfo, QList<FileE
     entries.clear();
     errors.clear();
 
-    if(_database.isValid() || !_database.isOpen())
+    if(!_database.isValid() || !_database.isOpen())
     {
         _lastError = "База данных не открыта.";
         return false;

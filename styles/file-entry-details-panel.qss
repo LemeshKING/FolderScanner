@@ -1,0 +1,31 @@
+QWidget#fileEntryDetailsPanel {
+	background-color: #202731;
+	border: 1px solid #303F47;
+	border-radius: 10px;
+}
+
+
+QLabel#detailsTitle {
+	color: #E1E8F2;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+QLabel#entryName {
+	color: #FFFFFF;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+QLabel#entryPath {
+	color: #93A1B5;
+	font-size: 11px;
+}
+
+QLabel {
+	color: #93A1B5;
+}
+
+QFormLayout QLabel {
+	color: #E1E8F2;
+}

@@ -2,6 +2,7 @@
 #define FILETREEMODEL_H
 
 #include "core/FileEntry.h"
+#include "preparedFileTreeData.h"
 
 #include <QAbstractItemModel>
 #include <QList>
@@ -39,24 +40,20 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
-private:
-
-    struct TreeNode
-    {
-        FileEntry entry;
-        TreeNode *parent = nullptr;
-        QList<TreeNode*> childrens;
-
-        qint64 fileCount = 0;
-        qint64 totalSizeBytes = 0;
-    };
-
-    TreeNode *nodeFromIndex(const QModelIndex &index) const;
-    void calculateStatistics(TreeNode *node);
     static QString formatSize(const qint64 &sizeBytes);
 
-    std::unique_ptr<TreeNode> _root;
-    std::vector<std::unique_ptr<TreeNode>> _nodes;
+    static PreparedFileTreeDataPtr prepareEntries(const QList<FileEntry> &entries);
+
+    void setPrepareData(PreparedFileTreeDataPtr data);
+
+private:
+
+    using TreeNode = PreparedFileTreeData::TreeNode;
+
+    TreeNode *nodeFromIndex(const QModelIndex &index) const;
+    static void calculateStatistics(TreeNode *node);
+
+    PreparedFileTreeDataPtr _preparedData;
 
 };
 

@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    MainWindow w;
+    MainWindow w(databaseManager.connection());
     w.show();
     return QApplication::exec();
 }

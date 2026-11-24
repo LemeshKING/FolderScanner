@@ -5,7 +5,7 @@
 #include <QtGlobal>
 
 class QLabel;
-class QTableView;
+class ScanHistoryView;
 class ScanHistoryModel;
 
 class ScanHistoryPanel : public QWidget
@@ -15,7 +15,7 @@ class ScanHistoryPanel : public QWidget
 public:
     ScanHistoryPanel(ScanHistoryModel *model, QWidget *parent = nullptr);
 
-    bool selectScan(const qint64 &scanId);
+    void selectScan(const qint64 &scanId);
     qint64 selectedScanId() const;
 
 signals:
@@ -23,22 +23,19 @@ signals:
 
 private slots:
 
-    void onRowChanged(const QModelIndex &current);
     void updateCount();
 
 private:
 
     void setupUi();
-    void setupTable();
     void setupStyle();
-
 
     ScanHistoryModel *_model = nullptr;
 
     QLabel *_titleLabel = nullptr;
     QLabel *_countLabel = nullptr;
 
-    QTableView *_tableView = nullptr;
+    ScanHistoryView *_tableView = nullptr;
 };
 
 #endif // SCANHISTORYPANEL_H

@@ -2,62 +2,84 @@
 
 #include <QHash>
 #include <QLocale>
+#include <QIcon>
+
+#include <utility>
 
 FileTreeModel::FileTreeModel(QObject *parent)
     : QAbstractItemModel(parent),
-    _root(std::make_unique<TreeNode>())
+    _preparedData(prepareEntries({}))
 {}
 
-void FileTreeModel::setEntries(const QList<FileEntry> &entries)
+PreparedFileTreeDataPtr FileTreeModel::prepareEntries(const QList<FileEntry> &entries)
 {
-    beginResetModel();
-
-    _nodes.clear();
-    _root = std::make_unique<TreeNode>();
+    PreparedFileTreeDataPtr prepared(new PreparedFileTreeData);
 
     QHash<qint64, TreeNode*> nodesById;
 
     for(const FileEntry &entry : entries)
     {
         auto node = std::make_unique<TreeNode>();
+
         node->entry = entry;
+
         TreeNode *nodePtr = node.get();
-        _nodes.push_back(std::move(node));
+
+        prepared->nodes.push_back(std::move(node));
+
         nodesById.insert(entry.entryId, nodePtr);
     }
 
-    for(const auto &ownedNode : _nodes)
+    for (const auto &ownedNode : prepared->nodes)
     {
         TreeNode *node = ownedNode.get();
-        TreeNode *parentNode = _root.get();
+        TreeNode *parentNode = prepared->root.get();
 
         if(node->entry.parentEntryId.has_value())
         {
             const qint64 parentId = node->entry.parentEntryId.value();
+
             const auto parentIt = nodesById.constFind(parentId);
 
             if(parentIt != nodesById.constEnd() && parentIt.value() != node && parentIt.value()->entry.type == EntryType::Directory)
                 parentNode = parentIt.value();
-
         }
 
         node->parent = parentNode;
         parentNode->childrens.append(node);
     }
 
-    calculateStatistics(_root.get());
+    calculateStatistics(prepared->root.get());
+
+    return prepared;
+}
+
+void FileTreeModel::setPrepareData(PreparedFileTreeDataPtr data)
+{
+    if(!data)
+        data = prepareEntries({});
+
+    beginResetModel();
+
+    _preparedData = std::move(data);
+
     endResetModel();
+}
+
+void FileTreeModel::setEntries(const QList<FileEntry> &entries)
+{
+    setPrepareData(prepareEntries(entries));
 }
 
 void FileTreeModel::clear()
 {
-    setEntries({});
+    setPrepareData({});
 }
 
 FileTreeModel::TreeNode *FileTreeModel::nodeFromIndex(const QModelIndex &index) const
 {
     if(!index.isValid())
-        return _root.get();
+        return _preparedData->root.get();
 
     return static_cast<TreeNode*>(index.internalPointer());
 }
@@ -87,7 +109,7 @@ QModelIndex FileTreeModel::parent(const QModelIndex &child) const
     TreeNode *childNode = nodeFromIndex(child);
     TreeNode *parentNode = childNode->parent;
 
-    if(parentNode == nullptr || parentNode == _root.get())
+    if(parentNode == nullptr || parentNode == _preparedData->root.get())
         return {};
 
     TreeNode *grandParent = parentNode->parent;
@@ -126,6 +148,14 @@ QVariant FileTreeModel::data(const QModelIndex &index, int role) const
     TreeNode *node = nodeFromIndex(index);
     const FileEntry &entry = node->entry;
 
+    if(role == Qt::DecorationRole && index.column() == 0)
+    {
+        static const QIcon folderIcon(":/icons/icons/folder.svg");
+        static const QIcon fileIcon(":/icons/icons/file.svg");
+
+        return entry.type == EntryType::Directory ? folderIcon : fileIcon;
+    }
+
     if(role == Qt::DisplayRole)
     {
         switch (index.column())
@@ -161,6 +191,9 @@ QVariant FileTreeModel::data(const QModelIndex &index, int role) const
 
         case RelativePathRole:
             return entry.relativePath;
+
+        case EntryTypeRole:
+            return static_cast<int>(entry.type);
 
         case SizeBytesRole:
             return entry.sizeBytes;
@@ -206,21 +239,42 @@ Qt::ItemFlags FileTreeModel::flags(const QModelIndex &index) const
 
 void FileTreeModel::calculateStatistics(TreeNode *node)
 {
-    node->fileCount = 0;
-    node->totalSizeBytes = 0;
+    std::vector<std::pair<TreeNode*, bool>> stack;
 
-    for(TreeNode *&child : node->childrens)
+    stack.emplace_back(node, false);
+
+    while(!stack.empty())
     {
-        if(child->entry.type == EntryType::File)
-        {
-            child->fileCount = 1;
-            child->totalSizeBytes = child->entry.sizeBytes;
-        }
-        else
-            calculateStatistics(child);
+        TreeNode *current = stack.back().first;
+        const bool visited = stack.back().second;
 
-        node->fileCount += child->fileCount;
-        node->totalSizeBytes += child->totalSizeBytes;
+        stack.pop_back();
+
+        if(!visited)
+        {
+            stack.emplace_back(current, true);
+
+            for(TreeNode *child : current->childrens)
+                if(child->entry.type == EntryType::Directory)
+                    stack.emplace_back(child, false);
+
+            continue;
+        }
+
+        current->fileCount = 0;
+        current->totalSizeBytes = 0;
+
+        for(TreeNode *child : current->childrens)
+        {
+            if(child->entry.type == EntryType::File)
+            {
+                child->fileCount = 1;
+                child->totalSizeBytes = child->entry.sizeBytes;
+            }
+
+            current->fileCount += child->fileCount;
+            current->totalSizeBytes += child->totalSizeBytes;
+        }
     }
 }
 

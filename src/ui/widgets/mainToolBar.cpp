@@ -35,6 +35,11 @@ void MainToolBar::setScanEnabled(bool enabled)
     _scanAction->setEnabled(enabled);
 }
 
+void MainToolBar::setCompareEnabled(bool enabled)
+{
+    _compareAction->setEnabled(enabled);
+}
+
 void MainToolBar::createActions()
 {
     _selectFolderAction = addAction(QIcon(":/icons/icons/folder-open.svg"), "Выбрать папку");
@@ -58,7 +63,24 @@ void MainToolBar::createActions()
     _refreshAction->setToolTip("Обновить историю сканирований");
     _refreshAction->setShortcut(Qt::Key_F5);
 
+    addSeparator();
+
+    _compareAction = addAction("Сравнить");
+    _compareAction->setToolTip("Сравнить выбранный снимок с текущем состоянием папки");
+    _compareAction->setEnabled(false);
+
     connect(_selectFolderAction, &QAction::triggered, this, &MainToolBar::selectFolderRequested);
     connect(_scanAction, &QAction::triggered, this, &MainToolBar::scanRequested);
     connect(_refreshAction, &QAction::triggered, this, &MainToolBar::refreshRequested);
+    connect(_compareAction, &QAction::triggered, this, &MainToolBar::compareRequested);
+}
+
+void MainToolBar::setBusy(bool busy)
+{
+    _busy = busy;
+
+    _selectFolderAction->setEnabled(!busy);
+    _scanAction->setEnabled(!busy && _scanEnabled);
+    _refreshAction->setEnabled(!busy);
+    _compareAction->setEnabled(!busy && _compareEnabled);
 }

@@ -17,10 +17,16 @@ DatabaseManager::DatabaseManager(const QString& databasePath)
 
     if(databasePath.trimmed().isEmpty())
     {
-        QString dataDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        const QString applicationDirectory = QCoreApplication::applicationDirPath();
 
-        if(dataDirectory.isEmpty())
-            dataDirectory = QDir::currentPath();
+
+        if(applicationDirectory.isEmpty())
+        {
+            setError("Не удалось определить папку приложения");
+            return;
+        }
+
+        const QString dataDirectory = QDir(applicationDirectory).filePath("database");
 
         if(!QDir().mkpath(dataDirectory))
         {
@@ -49,7 +55,7 @@ DatabaseManager::~DatabaseManager()
 
 bool DatabaseManager::open()
 {
-    if(_lastError.isEmpty() && _databasePath.isEmpty())
+    if(_databasePath.isEmpty() && _lastError.isEmpty())
         return false;
 
     if(_database.isValid() && _database.isOpen())
@@ -275,7 +281,7 @@ QStringList DatabaseManager::splitSqlStatements(const QString &script) const
 
 void DatabaseManager::close()
 {
-    if(_database.isValid())
+    if(!_database.isValid())
         return;
 
     _database.close();

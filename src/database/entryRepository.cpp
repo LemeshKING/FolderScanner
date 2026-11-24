@@ -45,7 +45,7 @@ bool EntryRepository::entryTypeFromString(const QString &value, EntryType &outTy
 bool EntryRepository::readEntry(const QSqlQuery &query, FileEntry &outEntry)
 {
     outEntry.entryId = query.value("entry_id").toLongLong();
-    outEntry.scanId = query.value("scna_id").toLongLong();
+    outEntry.scanId = query.value("scan_id").toLongLong();
 
     QVariant parentId = query.value("parent_entry_id");
     outEntry.parentEntryId.reset();
@@ -196,8 +196,8 @@ bool EntryRepository::getEntriesByScanId(const qint64 &scanId, QList<FileEntry> 
     QSqlQuery query(_database);
 
     query.prepare(
-        "SELECT entry_id, scan_id, parent_entry_id, name, relative_path, relative_path_key, entry_type, size+bytes "
-        "FROM scna_entries "
+        "SELECT entry_id, scan_id, parent_entry_id, name, relative_path, relative_path_key, entry_type, size_bytes "
+        "FROM scan_entries "
         "WHERE scan_id = :scan_id "
         "ORDER BY entry_id ASC"
     );

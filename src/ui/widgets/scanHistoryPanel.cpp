@@ -1,5 +1,6 @@
 #include "scanHistoryPanel.h"
 
+#include "scanHistoryView.h"
 #include "ui/styleManager.h"
 #include "models/scanHistoryModel.h"
 
@@ -16,18 +17,18 @@ ScanHistoryPanel::ScanHistoryPanel(ScanHistoryModel *model, QWidget *parent)
     : QWidget(parent),
     _model(model)
 {
-    Q_ASSERT(_model);
-
     setObjectName("scanHistoryPanel");
-
+    setAttribute(Qt::WA_StyledBackground, true);
     setupUi();
-    setupTable();
     setupStyle();
 
-    connect(_model, &QAbstractItemModel::modelReset, this, &ScanHistoryPanel::updateCount);
-    connect(_model, &QAbstractItemModel::rowsInserted, this, &ScanHistoryPanel::updateCount);
-    connect(_model, &QAbstractItemModel::rowsRemoved, this, &ScanHistoryPanel::updateCount);
-    connect(_tableView->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &ScanHistoryPanel::onRowChanged);
+    if(model)
+    {
+        connect(_model, &QAbstractItemModel::modelReset, this, &ScanHistoryPanel::updateCount);
+        connect(_model, &QAbstractItemModel::rowsInserted, this, &ScanHistoryPanel::updateCount);
+        connect(_model, &QAbstractItemModel::rowsRemoved, this, &ScanHistoryPanel::updateCount);
+    }
+    connect(_tableView, &ScanHistoryView::scanSelected, this, &ScanHistoryPanel::scanSelected);
 
     updateCount();
 }
@@ -61,40 +62,10 @@ void ScanHistoryPanel::setupUi()
 
     mainLayout->addLayout(headerLayout);
 
-    _tableView = new QTableView(this);
-    _tableView->setObjectName("scanHistoryTable");
+    _tableView = new ScanHistoryView(this);
+    _tableView->setScanModel(_model);
 
-    mainLayout->addWidget(_tableView);
-}
-
-void ScanHistoryPanel::setupTable()
-{
-    _tableView->setModel(_model);
-
-    _tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    _tableView->setSelectionMode(QAbstractItemView::SingleSelection);
-    _tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-    _tableView->setShowGrid(false);
-    _tableView->setAlternatingRowColors(true);
-    _tableView->setWordWrap(false);
-
-    _tableView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    _tableView->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-
-    _tableView->verticalHeader()->hide();
-    _tableView->verticalHeader()->setDefaultSectionSize(46);
-
-    QHeaderView *header = _tableView->horizontalHeader();
-
-    header->setHighlightSections(false);
-    header->setMinimumSectionSize(90);
-
-    header->setSectionResizeMode(ScanHistoryModel::PathColumn, QHeaderView::Stretch);
-    header->setSectionResizeMode(ScanHistoryModel::DateColumn, QHeaderView::ResizeToContents);
-    header->setSectionResizeMode(ScanHistoryModel::StatusColumn, QHeaderView::ResizeToContents);
-
-    _tableView->setCornerButtonEnabled(false);
+    mainLayout->addWidget(_tableView, 1);
 }
 
 void ScanHistoryPanel::updateCount()
@@ -106,38 +77,10 @@ void ScanHistoryPanel::updateCount()
 
 qint64 ScanHistoryPanel::selectedScanId() const
 {
-    const QModelIndex current = _tableView->currentIndex();
-
-    if(!current.isValid())
-        return -1;
-
-    return current.data(ScanHistoryModel::ScanIdRole).toLongLong();
+    return _tableView->selectedScanId();
 }
 
-bool ScanHistoryPanel::selectScan(const qint64 &scanId)
+void ScanHistoryPanel::selectScan(const qint64 &scanId)
 {
-    for(int row = 0; row < _model->rowCount(); row++)
-    {
-        const QModelIndex index = _model->index(row, ScanHistoryModel::PathColumn);
-        const qint64 currentId = index.data(ScanHistoryModel::ScanIdRole).toLongLong();
-
-        if(currentId == scanId)
-        {
-            _tableView->selectRow(row);
-            _tableView->scrollTo(index, QAbstractItemView::PositionAtCenter);
-            return true;
-        }
-    }
-
-    return false;
-}
-
-void ScanHistoryPanel::onRowChanged(const QModelIndex &current)
-{
-    if(!current.isValid())
-        return;
-
-    const qint64 scanId = current.data(ScanHistoryModel::ScanIdRole).toLongLong();
-    if(scanId > 0)
-        emit scanSelected(scanId);
+    _tableView->selectScan(scanId);
 }

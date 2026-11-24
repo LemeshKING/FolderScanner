@@ -1,0 +1,11 @@
+QWidget#fileTreePanel {
+	background-color: #1C222B;
+	border: 1px solid #303A47;
+	border-radius: 10px;
+}
+
+QLabel#fileTreeTitle {
+	color: #E1E8F2;
+	font-size: 14px;
+	font-weight: 600;
+}

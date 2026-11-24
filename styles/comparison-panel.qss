@@ -1,0 +1,54 @@
+QWidget#comparisonPanel {
+	background-color: #1C222B;
+}
+
+QLabel#comparisonTitle {
+	color: #E1E8F2;
+	
+	font-size: 15px;
+	font-weight: 600;
+}
+
+QLabel#newCount {
+	color: #63C58B;
+	background-color: rgba(99, 197, 139, 20);
+	
+	border-radius: 5px;
+	
+	padding: 5px 9px;
+	
+	font-size: 12px;
+	font-weight: 600;
+}
+
+QLabel#deletedCount {
+	color: #E57373;
+	background-color: rgba(229, 115, 115, 20);
+	
+	border-radius: 5px;
+	
+	padding: 5px 9px;
+	
+	font-size: 12px;
+	font-weight: 600;
+}
+
+QLabel#modifiedCount {
+	color: #E5B96A;
+	background-color: rgba(229, 185, 106, 20);
+	
+	border-radius: 5px;
+	
+	padding: 5px 9px;
+	
+	font-size: 12px;
+	font-weight: 600;
+}
+
+QLabel#comparisonStatus {
+	color: #93A1B5;
+	
+	font-size: 12px;
+	
+	padding: 2px 4px;
+}
